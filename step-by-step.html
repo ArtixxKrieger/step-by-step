@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>step by step.</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f9f6f0;
+            color: #333;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .content-container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            padding: 20px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-height: 100vh;
+        }
+
+        .content-container.active {
+            opacity: 1;
+        }
+
+        #start-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #f9f6f0;
+            background-color: #333;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #start-btn:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #start-btn:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .letter-block {
+            text-align: left;
+            margin-top: 20px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .letter-block::-webkit-scrollbar {
+            display: none;
+        }
+
+        .letter-text {
+            font-family: 'Georgia', serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .content-container {
+                font-size: 1rem;
+                padding: 10px;
+            }
+            .letter-text {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+        }
+
+        .heart {
+            position: fixed;
+            top: -50px;
+            font-size: 24px;
+            z-index: 5;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="start-btn">Click Me</button>
+
+    <div class="content-container" id="text-container">
+        <div id="intro-text"></div>
+        
+        <div id="letter-block" class="letter-block" style="display: none;">
+            <div class="letter-text" id="letter-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const musicUrl = "stepbystep.mp3"; 
+        
+        const introText = "this might make you cry\n\nbut you need to read it";
+        
+        const letterText = `What happened has happened, and I understand how badly you wish you could change it. But remember, dwelling on the past can take up so much of your precious mental space. It's time to gently release the grip it has on your heart. Let yourself heal from the pain, step by step. You deserve the freedom to embrace the present and the future with a lighter heart.\n\nBe kind to yourself and allow the process of healing to unfold. You are stronger than you know, and brighter days are ahead.`;
+
+        const startBtn = document.getElementById('start-btn');
+        const textContainer = document.getElementById('text-container');
+        const introDiv = document.getElementById('intro-text');
+        const letterBlock = document.getElementById('letter-block');
+        const letterContentDiv = document.getElementById('letter-content');
+        
+        const audio = new Audio(musicUrl);
+        audio.loop = true;
+        audio.volume = 0.5;
+
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function typeWriter(element, text, speed) {
+            for (let i = 0; i < text.length; i++) {
+                const char = text.charAt(i);
+                if (char === '\n') {
+                    element.innerHTML += '<br>';
+                } else {
+                    element.innerHTML += char;
+                }
+                
+                if (element.classList.contains('letter-text')) {
+                    element.parentElement.scrollTop = element.parentElement.scrollHeight;
+                }
+
+                const randomSpeed = speed + (Math.random() * 30 - 15);
+                await sleep(randomSpeed);
+            }
+        }
+
+        function startRain() {
+            const colors = ['#ff4d4d', '#ff66b2', '#cc66ff', '#66b3ff', '#ffb366', '#ff1a1a', '#ff99cc'];
+            const hearts = ['❤', '💖', '💙', '💜', '💛', '💚', '🩷'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                
+                const duration = Math.random() * 3 + 3;
+                heart.style.animationDuration = duration + 's';
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }, 150);
+        }
+
+        startBtn.addEventListener('click', async () => {
+            audio.play().catch(e => console.log("Audio play failed:", e));
+            
+            startBtn.classList.add('hidden');
+            textContainer.classList.add('active');
+
+            await typeWriter(introDiv, introText, 60);
+
+            await sleep(2500);
+
+            introDiv.style.transition = "opacity 1.5s ease";
+            introDiv.style.opacity = "0";
+            
+            await sleep(1500);
+            
+            introDiv.innerHTML = "";
+            letterBlock.style.display = "block";
+            
+            await typeWriter(letterContentDiv, letterText, 30);
+
+            await sleep(1000);
+            startRain();
+        });
+    </script>
+</body>
+</html>
